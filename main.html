@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  height:100vh;
+  background: linear-gradient(-45deg,#ff6ec7,#ff9a9e,#fad0c4,#fbc2eb);
+  background-size:400% 400%;
+  animation: bg 10s infinite;
+  font-family:sans-serif;
+  color:white;
+  text-align:center;
+}
+
+@keyframes bg{
+  0%{background-position:0%}
+  50%{background-position:100%}
+  100%{background-position:0%}
+}
+
+.container{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+}
+
+.title{
+  font-size:50px;
+  text-shadow:0 0 20px #fff,0 0 40px pink;
+}
+
+.photo{
+  width:230px;
+  height:230px;
+  border-radius:50%;
+  border:6px solid white;
+  margin:20px auto;
+  box-shadow:0 0 30px pink;
+  animation:spin 10s linear infinite;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0)}
+  100%{transform:rotate(360deg)}
+}
+
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:20px;
+  margin:5px;
+  cursor:pointer;
+  background:pink;
+  color:white;
+  font-weight:bold;
+}
+
+/* tim */
+.heart{
+  position:absolute;
+  color:#ff5fa2;
+  animation:heart 4s linear forwards;
+}
+
+@keyframes heart{
+  0%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(-200px);opacity:0}
+}
+
+/* confetti */
+.confetti{
+  position:absolute;
+  width:8px;
+  height:12px;
+  background:red;
+}
+
+canvas{
+  position:absolute;
+  top:0;
+  left:0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NHẠC -->
+<audio id="music" loop autoplay>
+  <source src="https://litter.catbox.moe/mmhnlgpiepfrg3tm.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="fire"></canvas>
+
+<div class="container">
+  <div class="title">🎂 Happy Birthday 🎉</div>
+
+  <img class="photo"
+  src="https://litter.catbox.moe/6a3uhpzzjbgc85l9.jfif">
+
+  <p>Chúc bé luôn vui vẻ, đáng yêu 💖</p>
+
+  <button onclick="play()">🎵 Bật nhạc</button>
+  <button onclick="hearts()">💖 Thả tim</button>
+  <button onclick="confetti()">🎊 Confetti</button>
+</div>
+
+<script>
+// ===== NHẠC =====
+const music = document.getElementById("music");
+function play(){
+  music.play();
+}
+
+// ===== TIM =====
+function hearts(){
+  for(let i=0;i<20;i++){
+    let h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="💖";
+    h.style.left=Math.random()*window.innerWidth+"px";
+    h.style.top=window.innerHeight+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),4000);
+  }
+}
+
+// ===== CONFETTI =====
+function confetti(){
+  for(let i=0;i<80;i++){
+    let c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*window.innerWidth+"px";
+    c.style.top="-10px";
+    c.style.background=["red","yellow","blue","pink"][Math.floor(Math.random()*4)];
+    document.body.appendChild(c);
+
+    let fall=setInterval(()=>{
+      c.style.top=parseInt(c.style.top)+5+"px";
+      if(parseInt(c.style.top)>window.innerHeight){
+        clearInterval(fall);
+        c.remove();
+      }
+    },20);
+  }
+}
+
+// ===== FIREWORK =====
+const canvas=document.getElementById("fire");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let particles=[];
+
+function firework(){
+  let x=Math.random()*canvas.width;
+  let y=Math.random()*canvas.height/2;
+
+  for(let i=0;i<60;i++){
+    particles.push({
+      x:x,
+      y:y,
+      dx:(Math.random()-0.5)*5,
+      dy:(Math.random()-0.5)*5,
+      life:100
+    });
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.dx;
+    p.y+=p.dy;
+    p.life--;
+
+    ctx.fillStyle="white";
+    ctx.fillRect(p.x,p.y,3,3);
+  });
+
+  particles=particles.filter(p=>p.life>0);
+  requestAnimationFrame(draw);
+}
+
+setInterval(firework,800);
+draw();
+
+// click auto bật nhạc (fix bị chặn)
+document.body.addEventListener("click",()=>{
+  music.play().catch(()=>{});
+},{once:true});
+</script>
+
+</body>
+</html>
